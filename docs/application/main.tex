@@ -1,0 +1,283 @@
+\documentclass[conference,a4paper]{IEEEtran}
+
+\usepackage[serbian]{babel}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{circuitikz}
+\usepackage{svg}
+\usepackage{url}
+\usepackage{hyperref}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+
+\IEEEoverridecommandlockouts
+% Dodajte ID konferencije ovde kako bi se prikazao futer 
+\IEEEpubid{\makebox[\columnwidth]{IEEESTEC \hfill 18th Student Projects Conference, Ni, 2025.} \hspace{\columnsep}\makebox[\columnwidth]{ }}
+
+\begin{document}
+	
+	\title{base3 – Ternarna aritmetička logička jedinica}
+	
+	\author{
+		\IEEEauthorblockN{Ognjen Guteša}
+		\IEEEauthorblockA{
+			Elektrotehnička škola „Mihajlo Pupin“\\
+			Novi Sad, Srbija\\
+			heyognjen@icloud.com}
+	}
+	
+	\maketitle
+	
+	\begin{abstract}
+		U ovom radu je predstavljena \textbf{ternarna aritmetička logička jedinica} pod nazivom \textbf{base3}, koja koristi nebalansiranu ternarnu logiku sa vrednostima 0, 1 i 2. Ova jedinica je projektovana da izvršava osnovne aritmetičke operacije sabiranja i oduzimanja, uz mogućnost unosa dva broja i prikaza rezultata. Kroz rad se prikazuje razvoj ternarne logike, kao i osnovni koncepti projektovanja logičkih kola koja čine osnovu ovog sistema. Implementacija ternarne logike pokazuje potencijalne prednosti u pogledu gustine informacija i efikasnosti u odnosu na tradicionalne binarne sisteme.
+	\end{abstract}
+	
+	\begin{IEEEkeywords}
+		ternarna logika, aritmetičko-logička jedinica, digitalna elektronika, nebalansirani sistem, base3, CMOS tehnologija
+	\end{IEEEkeywords}
+	
+\section{Uvod}
+
+Razvoj digitalnih sistema je decenijama bio zasnovan na binarnoj logici, sa dva stabilna stanja – nula i jedinica. Međutim, ideja o višestrukim logičkim nivoima javlja se još pedesetih godina prošlog veka, kada su istraživači poput Zadeha, Kleenea i Łukasiewicza razmatrali mogućnost uvođenja dodatnih logičkih vrednosti u sistem odlučivanja i računanja. Prvi eksperimenti sa fizičkom realizacijom ternarnih računara izvedeni su šezdesetih godina, među kojima se posebno ističe sovjetski računar \textit{Setun} (1958), razvijen na Moskovskom državnom univerzitetu. Ovaj računar je koristio balansiranu ternarnu logiku ($-1$, 0, $+1$) i pokazao je da se kompleksne aritmetičke operacije mogu izvesti sa manje hardverskih resursa nego u binarnim sistemima.
+
+Uvođenje treće logičke vrednosti omogućava veću gustinu informacija po logičkom elementu, smanjenje kompleksnosti u određenim vrstama kola i potencijalno manju potrošnju energije pri izvršavanju operacija. Iako je razvoj binarne tehnologije, zasnovan na CMOS logici, potisnuo istraživanja višestrukih logičkih nivoa, povratak interesovanja za ternarnu logiku poslednjih godina potiče od ograničenja binarne miniaturizacije i rastuće potrebe za energetski efikasnim sistemima.
+
+Ternarna logika se deli na \textit{balansiranu} ($-1$, 0, $+1$) i \textit{nebalansiranu} (0, 1, 2)~\cite{jones_logic}. U ovom projektu koristi se nebalansirana ternarna logika zbog lakše implementacije u CMOS tehnologiji i jasnije interpretacije aritmetičkih operacija. Nebalansirani sistem omogućava jednostavnije mapiranje na konvencionalne naponske nivoe koji su uobičajeni u digitalnoj elektronici.
+
+Uređaj \textbf{base3} je projektovan kao osnovna aritmetičko-logička jedinica (ALU) koja realizuje sabiranje i oduzimanje ternarnih vrednosti. Ova jedinica predstavlja prvi korak ka implementaciji kompleksnijih ternarnih računarskih sistema i doprinosi istraživanju mogućnosti prelaska sa binarnih na višestruke logičke nivoe u savremenoj digitalnoj elektronici.
+
+	
+	\section{Osnovna logička kola}
+	
+	Za realizaciju funkcionalnosti ternarne aritmetičko-logičke jedinice neophodna su osnovna logička kola koja omogućavaju formiranje, kombinovanje i negaciju ternarnih signala. Ova kola čine osnovnu bazu svakog digitalnog sistema zasnovanog na ternarnoj logici i predstavljaju osnovne gradivne blokove svih složenijih aritmetičkih kola.
+	
+	U nebalansiranoj ternarnoj logici koriste se tri logička nivoa označena kao 0, 1 i 2, gde:
+	\begin{itemize}
+		\item \textbf{0} predstavlja stanje niskog napona (GND),
+		\item \textbf{1} predstavlja srednji naponski nivo ($V_{DD}/2$),
+		\item \textbf{2} predstavlja visoki naponski nivo ($V_{DD}$).
+	\end{itemize}
+	
+	Ovaj sistem omogućava prirodnu kompatibilnost sa CMOS tehnologijom, jer su granice između nivoa jednostavno definisane naponskim pragovima.
+	
+	Osnovni elementi ternarne logike uključuju sledeće funkcionalne blokove:
+	
+	\begin{itemize}
+		\item \textbf{STI (Standard Ternary Inverter)} – standardni inverter koji vrši osnovnu negaciju u ternarnom sistemu. Za nebalansirani sistem, ovo odgovara "ternarnom komplementu dvojke", definisanom kao $STI(A) = 2 - A$:
+		\[
+		STI(0)=2, \quad STI(1)=1, \quad STI(2)=0
+		\]
+		Ova funkcija je središnja za realizaciju oduzimanja.
+		
+		\item \textbf{NTI (Negative Threshold Inverter)} – inverter sa nižim pragom provodnosti koji menja stanje samo pri nižim naponskim nivoima. Koristi se za detekciju logičkog stanja 0 i prelaza između 0 i 1.
+		
+		\item \textbf{PTI (Positive Threshold Inverter)} – inverter sa višim pragom provodnosti koji reaguje na prelaz između 1 i 2. Upotrebljava se kao detektor visokog logičkog nivoa i u kolima komparatora.
+		
+		\item \textbf{TAND (Ternary AND)} – ternarna logička kapija koja vraća najmanju od dve ulazne vrednosti:
+		\[
+		TAND(A,B) = \min(A,B)
+		\]
+		U fizičkoj realizaciji, \textbf{TAND} se može dobiti dodavanjem \textbf{STI} invertera na izlaz \textbf{TNAND} kola, čime se vrši negacija funkcije $\min(A,B)$ i vraća se osnovna konjunkcija.  
+		Praktična realizacija \textbf{TNAND} i izvedenog \textbf{TAND} kola prikazana je na slici~\ref{fig:tnand_tand}.
+		
+		\item \textbf{TNAND (Ternary NAND)} – negacija funkcije minimuma:
+		\[
+		TNAND(A,B) = STI(\min(A,B))
+		\]
+		Predstavlja osnovu za realizaciju većine drugih kombinacionih kola u ternarnoj logici, jer se iz nje može direktno izvesti \textbf{TAND} dodavanjem inverzije.
+		
+		\item \textbf{TOR (Ternary OR)} – kapija koja vraća najveću od dve ulazne vrednosti:
+		\[
+		TOR(A,B) = \max(A,B)
+		\]
+		Fizička realizacija \textbf{TOR} kola prikazana je na slici~\ref{fig:tor}.
+		
+		\item \textbf{TNOR (Ternary NOR)} – negacija funkcije maksimuma:
+		\[
+		TNOR(A,B) = STI(\max(A,B))
+		\]
+	\end{itemize}
+	
+	Kombinacijom ovih funkcionalnih blokova moguće je formirati bilo koju složeniju ternarnu logičku funkciju.  
+	STI, NTI i PTI inverteri služe i kao komparatori i kao elementi dekodera, dok TAND, TNAND, TOR i TNOR predstavljaju osnovne logičke operacije konjunkcije i disjunkcije u sistemu sa tri stabilna naponska nivoa.
+	
+	Ova kola čine osnovu aritmetičkih funkcionalnih blokova koji se kasnije kombinuju u sabirače, oduzimače i logičke sekcije ALU jedinice \textit{base3}.
+	
+	\section{Struktura jedinice base3}
+	
+	Struktura ternarne aritmetičko-logičke jedinice (\textit{base3}) osmišljena je tako da omogućava izvršavanje osnovnih aritmetičkih operacija sabiranja i oduzimanja ternarnih brojeva. Jedinica je modularno projektovana i sastoji se od sledećih podsistema:
+	
+	\begin{enumerate}
+		\item Blok osnovnih logičkih kola – implementira TAND, TOR, TNAND, TNOR, STI, NTI i PTI funkcije.
+		\item Aritmetički blok (kompleksna kola) – sadrži polusabirače i pune sabirače izvedene iz osnovnih logičkih funkcija.
+		\item Kontrolna logika – određuje režim rada (sabiranje ili oduzimanje).
+		\item Ulazno/izlazni interfejs – zadužen za prikaz i unos ternarnih brojeva i rezultata.
+	\end{enumerate}
+	
+	\section{Kompleksna logička kola}
+	
+	Kompleksna logička kola predstavljaju gradivne blokove za aritmetičke operacije. Ona se grade kombinovanjem osnovnih logičkih kola i čine srž ALU jedinice.
+	
+	\subsection{Ternarni polusabirač (THA)}
+	
+	Ternarni polusabirač (Ternary Half Adder – THA) prima dva ulaza $A$ i $B$ i generiše dva izlaza:
+	\begin{itemize}
+		\item $S$ (suma) – rezultat sabiranja mod 3,
+		\item $C$ (prenos) – prenos u sledeći stepen.
+	\end{itemize}
+	
+	Matematički opis polusabirača~\cite{jones_arith}:
+	\begin{equation}
+		S = (A + B) \bmod 3
+	\end{equation}
+	\begin{equation}
+		C = \left\lfloor \frac{A + B}{3} \right\rfloor
+	\end{equation}
+	
+	U nebalansiranom sistemu (0, 1, 2), maksimalna suma $A+B$ je 4 (za 2+2). Stoga, izlaz $C$ (prenos) može biti samo 0 (za A+B < 3) ili 1 (za A+B >= 3).
+	Kolo polusabirača može se realizovati pomoću TAND i TOR kapija kombinovanih sa STI inverterom.
+	
+	\begin{figure}[htbp]
+		\centering
+		\caption{Šema ternarnog polusabirača (THA).}
+		\label{fig:tha}
+	\end{figure}
+	
+	\subsection{Ternarni puni sabirač (TFA)}
+	
+	Ternarni puni sabirač (TFA) dodaje treći ulaz – prenos iz prethodnog stepena $C_{in}$.
+	Izlazi su definisani kao~\cite{jones_arith}:
+	\begin{equation}
+		S = (A + B + C_{in}) \bmod 3
+	\end{equation}
+	\begin{equation}
+		C_{out} = \left\lfloor \frac{A + B + C_{in}}{3} \right\rfloor
+	\end{equation}
+	
+	Pošto je $C_{in}$ takođe 0 ili 1, maksimalna suma $A + B + C_{in}$ je 5 (za 2+2+1). U tom slučaju, $S = 5 \bmod 3 = 2$, a $C_{out} = \lfloor 5/3 \rfloor = 1$. Prenos $C_{out}$ je i dalje samo 0 ili 1.
+	
+	Struktura TFA se može realizovati kaskadnim vezivanjem dva polusabirača (THA) i jednog TOR kola:
+	\begin{itemize}
+		\item $S_1 = (A + B) \bmod 3$
+		\item $C_1 = \lfloor (A + B) / 3 \rfloor$
+		\item $S = (S_1 + C_{in}) \bmod 3$
+		\item $C_2 = \lfloor (S_1 + C_{in}) / 3 \rfloor$
+		\item $C_{out} = \max(C_1, C_2) = TOR(C_1, C_2)$
+	\end{itemize}
+	Pošto $C_1$ i $C_2$ nikada ne mogu biti 1 istovremeno, TOR (max) funkcija je ekvivalentna njihovom zbiru.
+	
+	\begin{figure}[htbp]
+		\centering
+
+		\caption{Šema ternarnog punog sabirača (TFA).}
+		\label{fig:tfa}
+	\end{figure}
+	
+	\subsection{Logika za oduzimanje (Sabtraktor)}
+	
+	Oduzimanje u nebalansiranom sistemu se ne vrši prostim invertovanjem, već korišćenjem komplementa trojke. Operacija $A - B$ se ekvivalentno izvodi kao $A + (3's\_complement(B))$.
+	
+	Komplement trojke broja $B$ se dobija tako što se prvo nađe ternarni komplement dvojke (trit-po-trit), a zatim se na najnižu poziciju doda 1.
+	\begin{itemize}
+		\item Ternarni komplement dvojke trita $B_i$ je $2 - B_i$. Ovo je tačno ono što radi naše \textbf{STI} kolo.
+		\item Operacija $A - B$ se stoga realizuje kao $A + STI(B) + 1$.
+	\end{itemize}
+	
+	U praksi, ovo znači da se za oduzimanje koristi isti TFA hardver (puni sabirač) kao i za sabiranje, uz dve modifikacije koje kontroliše signal $SUB$:
+	\begin{enumerate}
+		\item Drugi operand $B$ se propušta kroz multiplekser koji bira $B$ (ako je $SUB=0$) ili $STI(B)$ (ako je $SUB=1$).
+		\item Početni prenos $C_{in}$ na najnižem bitu se postavlja na $SUB$ (0 za sabiranje, 1 za oduzimanje).
+	\end{enumerate}
+	Ovo čini TFA jedinicu univerzalnim sabiračem/oduzimačem.
+	
+	\begin{figure}[htbp]
+		\centering
+		\caption{Šema logike za oduzimanje (puni sabirač-oduzimač).}
+		\label{fig:subtractor}
+	\end{figure}
+	
+	\section{Princip rada}
+	
+	Princip rada \textit{base3} jedinice zasniva se na kombinaciji aritmetičkog i logičkog procesiranja ternarnih signala u okviru tri stabilna naponska nivoa.
+	Svi logički izrazi i aritmetičke funkcije implementirani su u nebalansiranom sistemu (0, 1, 2) uz korišćenje mod 3 aritmetike.
+	
+	\subsection{Režim sabiranja}
+	
+	U režimu sabiranja (kada je kontrolni signal $SUB=0$), ulaz $B$ se prosleđuje direktno na TFA, a početni prenos $C_0$ je 0. Svi TFA moduli rade sinhrono. Prenos iz svakog stepena prosleđuje se sledećem po formuli:
+	\begin{equation}
+		C_{i+1} = \left\lfloor \frac{A_i + B_i + C_i}{3} \right\rfloor
+	\end{equation}
+	\begin{equation}
+		S_i = (A_i + B_i + C_i) \bmod 3
+	\end{equation}
+	
+	\subsection{Režim oduzimanja}
+	
+	U režimu oduzimanja (kada je $SUB=1$), operand $B$ se transformiše u svoj komplement (STI) pre ulaska u sabirač, a početni prenos $C_0$ se postavlja na 1.
+	\begin{equation}
+		B'_i = STI(B_i) = 2 - B_i
+	\end{equation}
+	Sabiračka mreža tada izračunava $A + B' + 1$, što je jednako $A - B$.
+	\begin{equation}
+		C_{i+1} = \left\lfloor \frac{A_i + B'_i + C_i}{3} \right\rfloor
+	\end{equation}
+	\begin{equation}
+		S_i = (A_i + B'_i + C_i) \bmod 3
+	\end{equation}
+	
+	\subsection{Logičke funkcije}
+	
+	Pored aritmetičkih funkcija, ALU jedinica podržava i osnovne logičke operacije implementirane pomoću TAND, TNAND, TOR i TNOR kola, što omogućava kompletnu kombinatornu obradu signala.
+	
+	\section{Realizacija i komponente}
+	
+	Praktična realizacija \textit{base3} jedinice zasniva se na CMOS tehnologiji i MOSFET tranzistorima različitih pragova provodnosti.
+	Ključni elementi realizacije su:
+	
+	\begin{itemize}
+		\item MOSFET tranzistori različitog $V_{th}$ – obezbeđuju detekciju i stabilizaciju tri naponska nivoa.
+		\item Otpornici i delitelji napona – definišu srednji nivo (1) i stabilizuju granice između logičkih stanja.
+		\item STI, NTI i PTI inverteri – koriste se za detekciju logičkih stanja i formiranje komplementarnih signala.
+		\item Aritmetički blokovi (THA, TFA) – realizuju sabiranje i oduzimanje ternarnih brojeva.
+		\item Kontrolna logika – bira mod rada ALU (sabiranje, oduzimanje, logičke operacije).
+		\item Interfejs – povezuje ulazne i izlazne signale sa prikaznim jedinicama.
+	\end{itemize}
+	
+	Kao referentni naponi obično se koriste:
+	\[
+	V_0 = 0\,\text{V}, \quad V_1 = 1.65\,\text{V}, \quad V_2 = 3.3\,\text{V}
+	\]
+	
+	Ovim se obezbeđuje jasno razdvajanje nivoa i pouzdano preklapanje tranzistora. Korišćenjem MOSFET-a sa pragovima između ovih napona omogućava se jednostavna realizacija ternarnih komparatora i invertera.
+	
+	U poređenju sa binarnim ALU sistemima, ternarna implementacija smanjuje broj linija za prenos, povećava gustinu informacija po jedinici površine i smanjuje potrošnju energije.
+	
+\section{Zaključak}
+
+U ovom radu predstavljena je struktura, funkcionalni princip i tehnička realizacija \textbf{nebalansirane ternarne aritmetičko-logičke jedinice (ALU)} pod nazivom \textit{base3}. Ova jedinica koristi tri logička nivoa (0, 1, 2) i CMOS tranzistore različitih pragova provodnosti kako bi ostvarila osnovne aritmetičke i logičke operacije.
+
+Rezultati implementacije pokazuju da nebalansirana ternarna logika ima značajne prednosti u odnosu na tradicionalnu binarnu, uključujući:
+\begin{itemize}
+	\item smanjenje broja logičkih linija i međuspojeva,
+	\item veću gustinu informacija po kolu,
+	\item manju potrošnju energije po operaciji,
+	\item prirodnu kompatibilnost sa CMOS tehnologijom.
+\end{itemize}
+
+Osnovna logička kola (STI, NTI, PTI, TAND, TNAND, TOR, TNOR) čine temelj aritmetičkog sistema koji podržava sabiranje i oduzimanje po principu komplementa trojke. Proširenjem aritmetičkog bloka moguće je realizovati i kompleksnije funkcije poput množenja (TMUL), deljenja (TDIV) i komparacije (TCMP), čime bi se \textit{base3} jedinica razvila u samostalno procesorsko jezgro.
+
+Ternarni sistemi se ponovo nameću kao realna alternativa binarnim, posebno u kontekstu modernih tehnologija kao što su neuromorfni računari i kvantna elektronika. Projekat \textit{base3} dokazuje da prelazak sa binarne na ternarnu logiku nije samo teoretski moguć, već i tehnički ostvariv uz savremene komponente i projektne pristupe.
+
+	
+	\bibliographystyle{IEEEtran}
+	\begin{thebibliography}{1}
+		
+		\bibitem{jones_logic}
+		D. W. Jones, "Standard Ternary Logic," Web stranica, 2016. [Online]. Dostupno: \url{https://homepage.cs.uiowa.edu/~jones/ternary/logic.shtml}. [Pristupljeno: 18. Okt. 2025].
+		
+		\bibitem{jones_arith}
+		D. W. Jones, "Fast Ternary Addition," Web stranica, 2015. [Online]. Dostupno: \url{https://homepage.cs.uiowa.edu/~jones/ternary/arith.shtml}. [Pristupljeno: 18. Okt. 2025].
+		
+	\end{thebibliography}
+	
+\end{document}

@@ -1,0 +1,18 @@
+.SUBCKT IRF540 D G S
+* N-kanalni MOSFET model za IRF540
+M1 D G S S IRF540
+.MODEL IRF540 NMOS (
++ VTO=3.0       ; Threshold Voltage (V)
++ KP=15.5       ; Transconductance (A/V^2)
++ RD=0.04       ; Drain Resistance (Ω)
++ RS=0.04       ; Source Resistance (Ω)
++ RG=1.2        ; Gate Resistance (Ω)
++ CGD=29e-9     ; Gate-Drain Capacitance (F)
++ CGS=10e-9     ; Gate-Source Capacitance (F)
++ CBD=139e-12   ; Body-Drain Capacitance (F)
++ CBS=890e-12   ; Body-Source Capacitance (F)
++ IS=1e-12      ; Saturation Current (A)
++ TT=61e-9      ; Transit Time (s)
++ RDS=0.077)     ; On-State Resistance (Ω)
+
+.ENDS IRF540

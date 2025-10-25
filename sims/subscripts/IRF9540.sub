@@ -1,0 +1,18 @@
+.SUBCKT IRF9540_P D G S
+* P-kanalni MOSFET model za IRF9540
+M1 D G S S IRF9540_PMOD
+.MODEL IRF9540_PMOD PMOS (
++ VTO=-4        ; Prag napona (V)
++ KP=6.2        ; Transkonduktansa (A/V^2)
++ RD=0.1        ; Drain otpornost (Ω)
++ RS=0.1        ; Source otpornost (Ω)
++ RG=1.6        ; Gate otpornost (Ω)
++ CGD=29e-9     ; Gate-Drain kapacitivnost (F)
++ CGS=14e-9     ; Gate-Source kapacitivnost (F)
++ CBD=590e-12   ; Body-Drain kapacitivnost (F)
++ CBS=1400e-12  ; Body-Source kapacitivnost (F)
++ IS=1e-12      ; Zasićena struja diode (A)
++ TT=130e-9     ; Vreme tranzicije (s)
++ RDS=0.2       ; On-state otpornost (Ω)
+)
+.ENDS IRF9540_P
